@@ -72,7 +72,9 @@ export function useGameListingLogic(platformSlug: string) {
           setGames((prev) => {
             // Deduplicate games by ID
             const existingIds = new Set(prev.map((g) => g.id));
-            const newGames = data.games.filter((g: GameCardData) => !existingIds.has(g.id));
+            const newGames = data.games.filter(
+              (g: GameCardData) => !existingIds.has(g.id),
+            );
             return [...prev, ...newGames];
           });
           setPage((prev) => prev + 1);
