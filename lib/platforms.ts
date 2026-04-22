@@ -187,6 +187,7 @@ export interface IGDBSearchResult {
   cover?: {
     image_id: string;
   };
+  first_release_date?: number;
   platforms?: Array<{
     id: number;
     name: string;

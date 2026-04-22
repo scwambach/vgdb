@@ -23,7 +23,7 @@ async function getAccessToken(): Promise<string> {
   // Set expiry to 5 minutes before actual expiry (tokens last ~60 days)
   tokenExpiry = Date.now() + (data.expires_in - 300) * 1000;
 
-  return cachedAccessToken;
+  return cachedAccessToken!;
 }
 
 export async function igdbRequest(

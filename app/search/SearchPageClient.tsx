@@ -174,7 +174,7 @@ export default function SearchPageClient({
           platformResults.length === 0 && (
             <Box sx={{ textAlign: "center", py: 8 }}>
               <Typography variant="h5" color="text.secondary">
-                No results found for "{query}"
+                No results found for &quot;{query}&quot;
               </Typography>
               <Typography variant="body1" color="text.secondary" sx={{ mt: 2 }}>
                 Try searching for a different game or platform

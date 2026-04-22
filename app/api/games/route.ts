@@ -29,7 +29,8 @@ export async function GET(request: NextRequest) {
     }
 
     // Handle decade filter - if provided, override platform default dates
-    let dateFilter = platform.dateFilter;
+    let dateFilter: { min?: number; max?: number } | undefined =
+      platform.dateFilter;
     if (decade) {
       const decadeStart = parseInt(decade);
       const decadeEnd = decadeStart + 9;

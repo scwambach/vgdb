@@ -28,7 +28,7 @@ export default async function HomePage() {
             Choose Your Platform
           </Typography>
           <Typography variant="h6" color="text.secondary">
-            Explore thousands of classic games from gaming's golden age
+            Explore thousands of classic games from gaming&apos;s golden age
           </Typography>
         </Box>
 

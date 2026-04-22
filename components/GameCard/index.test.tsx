@@ -1,19 +1,21 @@
-import { render, screen, fireEvent } from '@testing-library/react';
-import '@testing-library/jest-dom';
-import GameCard from './index';
-import { useGameCardLogic } from './Logic';
+import { render, screen, fireEvent } from "@testing-library/react";
+import "@testing-library/jest-dom";
+import GameCard from "./index";
+import { useGameCardLogic } from "./Logic";
 
-jest.mock('./Logic');
+jest.mock("./Logic");
 
-const mockUseGameCardLogic = useGameCardLogic as jest.MockedFunction<typeof useGameCardLogic>;
+const mockUseGameCardLogic = useGameCardLogic as jest.MockedFunction<
+  typeof useGameCardLogic
+>;
 
-describe('GameCard', () => {
+describe("GameCard", () => {
   const mockGame = {
     id: 1,
-    name: 'Super Mario Bros.',
-    slug: 'super-mario-bros',
+    name: "Super Mario Bros.",
+    slug: "super-mario-bros",
     cover: {
-      image_id: 'co1234',
+      image_id: "co1234",
     },
     rating: 90,
   };
@@ -32,51 +34,53 @@ describe('GameCard', () => {
     jest.clearAllMocks();
   });
 
-  it('renders without crashing', () => {
+  it("renders without crashing", () => {
     render(<GameCard game={mockGame} platformSlug="nes" />);
-    expect(screen.getByText('Super Mario Bros.')).toBeInTheDocument();
+    expect(screen.getByText("Super Mario Bros.")).toBeInTheDocument();
   });
 
-  it('matches snapshot', () => {
-    const { container } = render(<GameCard game={mockGame} platformSlug="nes" />);
+  it("matches snapshot", () => {
+    const { container } = render(
+      <GameCard game={mockGame} platformSlug="nes" />,
+    );
     expect(container).toMatchSnapshot();
   });
 
-  it('displays game name', () => {
+  it("displays game name", () => {
     render(<GameCard game={mockGame} platformSlug="nes" />);
-    expect(screen.getByText('Super Mario Bros.')).toBeInTheDocument();
+    expect(screen.getByText("Super Mario Bros.")).toBeInTheDocument();
   });
 
-  it('displays rating when available', () => {
+  it("displays rating when available", () => {
     render(<GameCard game={mockGame} platformSlug="nes" />);
-    const rating = screen.getByRole('img', { hidden: true });
+    const rating = screen.getByRole("img", { hidden: true });
     expect(rating).toBeInTheDocument();
   });
 
-  it('calls handleClick when card is clicked', () => {
+  it("renders as a link to the game detail page", () => {
     render(<GameCard game={mockGame} platformSlug="nes" />);
-    corenders as a link to the game detail page', () => {
+    const link = screen.getByRole("link");
+    expect(link).toHaveAttribute("href", "/games/nes/super-mario-bros");
+  });
+
+  it("calls handleFavoriteToggle when favorite button is clicked", () => {
     render(<GameCard game={mockGame} platformSlug="nes" />);
-    const link = screen.getByRole('link');
-    expect(link).toHaveAttribute('href', '/games/nes/super-mario-bros'
-  it('calls handleFavoriteToggle when favorite button is clicked', () => {
-    render(<GameCard game={mockGame} platformSlug="nes" />);
-    const favoriteButtons = screen.getAllByRole('button');
+    const favoriteButtons = screen.getAllByRole("button");
     const favoriteButton = favoriteButtons[1]; // First IconButton
     fireEvent.click(favoriteButton);
     expect(mockLogicReturn.handleFavoriteToggle).toHaveBeenCalledTimes(1);
   });
 
-  it('calls onAddToCollection when add button is clicked', () => {
+  it("calls onAddToCollection when add button is clicked", () => {
     const mockAddToCollection = jest.fn();
     render(
       <GameCard
         game={mockGame}
         platformSlug="nes"
         onAddToCollection={mockAddToCollection}
-      />
+      />,
     );
-    const buttons = screen.getAllByRole('button');
+    const buttons = screen.getAllByRole("button");
     const addButton = buttons[2]; // Second IconButton
     fireEvent.click(addButton);
     expect(mockAddToCollection).toHaveBeenCalledWith(mockGame);

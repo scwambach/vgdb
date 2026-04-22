@@ -36,8 +36,9 @@ export async function GET(request: NextRequest) {
     const formattedGameResults = gameResults.flatMap((game) => {
       // Find ALL platforms that match our supported platforms
       const supportedPlatforms =
-        game.platforms?.filter((p) => supportedPlatformIds.includes(p.id)) ||
-        [];
+        game.platforms?.filter((p: any) =>
+          supportedPlatformIds.includes(p.id as any),
+        ) || [];
 
       if (supportedPlatforms.length === 0) {
         return [];
