@@ -1,10 +1,9 @@
-import { Metadata } from 'next';
-import { notFound } from 'next/navigation';
-import Header from '@/components/Header';
-import GameListing from '@/components/GameListing';
-import { createClient } from '@/lib/supabase/server';
-import { getPlatformBySlug } from '@/lib/platforms';
-import { getGenres, getThemes } from '@/lib/igdb';
+import { Metadata } from "next";
+import { notFound } from "next/navigation";
+import Header from "@/components/Header";
+import GameListing from "@/components/GameListing";
+import { getPlatformBySlug } from "@/lib/platforms";
+import { getGenres, getThemes } from "@/lib/igdb";
 
 interface PageProps {
   params: Promise<{
@@ -12,13 +11,15 @@ interface PageProps {
   }>;
 }
 
-export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
+export async function generateMetadata({
+  params,
+}: PageProps): Promise<Metadata> {
   const { platform: platformSlug } = await params;
   const platform = getPlatformBySlug(platformSlug);
 
   if (!platform) {
     return {
-      title: 'Platform Not Found',
+      title: "Platform Not Found",
     };
   }
 
@@ -40,28 +41,12 @@ export default async function GamesPage({ params }: PageProps) {
     notFound();
   }
 
-  const supabase = await createClient();
-  const { data: { user } } = await supabase.auth.getUser();
-
-  let profile = null;
-  if (user) {
-    const { data } = await supabase
-      .from('profiles')
-      .select('*')
-      .eq('id', user.id)
-      .single();
-    profile = data;
-  }
-
   // Fetch genres and themes for filters
-  const [genres, themes] = await Promise.all([
-    getGenres(),
-    getThemes(),
-  ]);
+  const [genres, themes] = await Promise.all([getGenres(), getThemes()]);
 
   return (
     <>
-      <Header user={profile} />
+      <Header />
       <GameListing
         platformSlug={platform.slug}
         platformName={platform.name}

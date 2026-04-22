@@ -33,17 +33,21 @@ describe("GameListing", () => {
 
   const defaultLogicReturn = {
     games: mockGames,
+    allGames: mockGames,
     loading: false,
     error: null,
     filters: {},
-    sortBy: "name" as const,
-    sortDirection: "asc" as const,
+    sortBy: "rating" as const,
+    sortDirection: "desc" as const,
     drawerOpen: false,
     hasMore: true,
     observerTarget: { current: null },
+    searchQuery: "",
     handleFilterChange: jest.fn(),
     handleSortChange: jest.fn(),
     toggleDrawer: jest.fn(),
+    handleSearchChange: jest.fn(),
+    clearSearch: jest.fn(),
   };
 
   beforeEach(() => {

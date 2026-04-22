@@ -21,8 +21,15 @@ import {
   Alert,
   Skeleton,
   IconButton,
+  Chip,
 } from "@mui/material";
-import { FilterList as FilterIcon } from "@mui/icons-material";
+import {
+  FilterList as FilterIcon,
+  ArrowUpward as ArrowUpIcon,
+  ArrowDownward as ArrowDownIcon,
+  Search as SearchIcon,
+  Clear as ClearIcon,
+} from "@mui/icons-material";
 import GameCard from "@/components/GameCard";
 import { useGameListingLogic } from "./Logic";
 
@@ -41,6 +48,7 @@ export default function GameListing({
 }: GameListingProps) {
   const {
     games,
+    allGames,
     loading,
     error,
     filters,
@@ -49,9 +57,12 @@ export default function GameListing({
     drawerOpen,
     hasMore,
     observerTarget,
+    searchQuery,
     handleFilterChange,
     handleSortChange,
     toggleDrawer,
+    handleSearchChange,
+    clearSearch,
   } = useGameListingLogic(platformSlug);
 
   const decades = ["1980", "1990", "2000"];
@@ -61,34 +72,83 @@ export default function GameListing({
       <Container maxWidth="xl" sx={{ py: 4 }}>
         <Box
           sx={{
-            mb: 4,
-            display: "flex",
-            justifyContent: "space-between",
-            alignItems: "center",
+            flexWrap: "wrap",
+            gap: 2,
+            marginBottom: 2,
           }}
         >
-          <Typography variant="h3" component="h1">
+          <Typography
+            variant="h3"
+            component="h1"
+            sx={{
+              marginBottom: 1,
+            }}
+          >
             {platformName} Games
           </Typography>
-          <Box sx={{ display: "flex", gap: 2, alignItems: "center" }}>
-            <FormControl size="small" sx={{ minWidth: 150 }}>
+          <Box
+            sx={{
+              display: "flex",
+              gap: 2,
+              alignItems: "center",
+              flexWrap: "wrap",
+            }}
+          >
+            <TextField
+              size="small"
+              placeholder="Search games..."
+              value={searchQuery}
+              onChange={(e) => handleSearchChange(e.target.value)}
+              InputProps={{
+                startAdornment: (
+                  <SearchIcon sx={{ mr: 1, color: "text.secondary" }} />
+                ),
+                endAdornment: searchQuery && (
+                  <IconButton size="small" onClick={clearSearch}>
+                    <ClearIcon fontSize="small" />
+                  </IconButton>
+                ),
+              }}
+              sx={{ minWidth: 250 }}
+            />
+            <FormControl size="small" sx={{ minWidth: 180 }}>
               <InputLabel>Sort By</InputLabel>
               <Select
                 value={sortBy}
                 label="Sort By"
                 onChange={(e) => handleSortChange(e.target.value as any)}
               >
-                <MenuItem value="name">Alphabetical</MenuItem>
-                <MenuItem value="rating">Rating</MenuItem>
-                <MenuItem value="first_release_date">Release Year</MenuItem>
-                <MenuItem value="aggregated_rating">Popularity</MenuItem>
+                <MenuItem value="aggregated_rating">🔥 Popularity</MenuItem>
+                <MenuItem value="rating">⭐ User Rating</MenuItem>
+                <MenuItem value="name">🔤 Alphabetical</MenuItem>
+                <MenuItem value="first_release_date">📅 Release Year</MenuItem>
               </Select>
             </FormControl>
+            <Chip
+              icon={
+                sortDirection === "desc" ? <ArrowDownIcon /> : <ArrowUpIcon />
+              }
+              label={sortDirection === "desc" ? "High to Low" : "Low to High"}
+              size="small"
+              variant="outlined"
+              onClick={() => handleSortChange(sortBy)}
+              sx={{ cursor: "pointer" }}
+            />
             <IconButton onClick={toggleDrawer} color="primary">
               <FilterIcon />
             </IconButton>
           </Box>
         </Box>
+
+        {searchQuery && (
+          <Box sx={{ mb: 2 }}>
+            <Typography variant="body2" color="text.secondary">
+              {loading
+                ? "Loading all games for search..."
+                : `Showing ${games.length} of ${allGames.length} games matching "${searchQuery}"`}
+            </Typography>
+          </Box>
+        )}
 
         {error && (
           <Alert severity="error" sx={{ mb: 3 }}>

@@ -89,7 +89,7 @@ export const PLATFORMS = {
     slug: "dreamcast",
     name: "Dreamcast",
     color: "#FF6600",
-    dateFilter: { min: 883612800, max: 978307200 },
+    dateFilter: { min: 883612800, max: 1009843199 },
   }, // 1998-2001
   MSDOS: {
     id: 13,

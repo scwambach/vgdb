@@ -9,6 +9,7 @@ export interface SearchResult {
   type: "game" | "platform";
   platformSlug?: string;
   platformId?: number;
+  platformName?: string;
 }
 
 export function useHeaderLogic() {
@@ -17,7 +18,6 @@ export function useHeaderLogic() {
   const [searchQuery, setSearchQuery] = useState("");
   const [searchResults, setSearchResults] = useState<SearchResult[]>([]);
   const [searchLoading, setSearchLoading] = useState(false);
-  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
 
   // Keyboard shortcut for search (/)
   useEffect(() => {
@@ -106,32 +106,15 @@ export function useHeaderLogic() {
     }
   };
 
-  const handleMenuOpen = (event: React.MouseEvent<HTMLElement>) => {
-    setAnchorEl(event.currentTarget);
-  };
-
-  const handleMenuClose = () => {
-    setAnchorEl(null);
-  };
-
-  const handleNavigation = (path: string) => {
-    router.push(path);
-    handleMenuClose();
-  };
-
   return {
     mode,
     toggleTheme,
     searchQuery,
     searchResults,
     searchLoading,
-    anchorEl,
     handleSearchChange,
     handleSearchSelect,
     handleSearchKeyDown,
     handleRandomGame,
-    handleMenuOpen,
-    handleMenuClose,
-    handleNavigation,
   };
 }

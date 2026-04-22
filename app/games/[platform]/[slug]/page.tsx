@@ -1,10 +1,9 @@
-import { Metadata } from 'next';
-import { notFound } from 'next/navigation';
-import Header from '@/components/Header';
-import GameDetail from '@/components/GameDetail';
-import { createClient } from '@/lib/supabase/server';
-import { getPlatformBySlug } from '@/lib/platforms';
-import { getGameDetails } from '@/lib/igdb';
+import { Metadata } from "next";
+import { notFound } from "next/navigation";
+import Header from "@/components/Header";
+import GameDetail from "@/components/GameDetail";
+import { getPlatformBySlug } from "@/lib/platforms";
+import { getGameDetails } from "@/lib/igdb";
 
 interface PageProps {
   params: Promise<{
@@ -13,18 +12,20 @@ interface PageProps {
   }>;
 }
 
-export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
+export async function generateMetadata({
+  params,
+}: PageProps): Promise<Metadata> {
   const { platform: platformSlug, slug } = await params;
   const platform = getPlatformBySlug(platformSlug);
 
   if (!platform) {
-    return { title: 'Game Not Found' };
+    return { title: "Game Not Found" };
   }
 
   const game = await getGameDetails(slug, platform.id);
 
   if (!game) {
-    return { title: 'Game Not Found' };
+    return { title: "Game Not Found" };
   }
 
   return {
@@ -51,22 +52,9 @@ export default async function GameDetailPage({ params }: PageProps) {
     notFound();
   }
 
-  const supabase = await createClient();
-  const { data: { user } } = await supabase.auth.getUser();
-
-  let profile = null;
-  if (user) {
-    const { data } = await supabase
-      .from('profiles')
-      .select('*')
-      .eq('id', user.id)
-      .single();
-    profile = data;
-  }
-
   return (
     <>
-      <Header user={profile} />
+      <Header />
       <GameDetail
         game={game}
         platformSlug={platform.slug}

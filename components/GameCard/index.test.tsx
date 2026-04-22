@@ -4,11 +4,6 @@ import GameCard from './index';
 import { useGameCardLogic } from './Logic';
 
 jest.mock('./Logic');
-jest.mock('next/navigation', () => ({
-  useRouter: () => ({
-    push: jest.fn(),
-  }),
-}));
 
 const mockUseGameCardLogic = useGameCardLogic as jest.MockedFunction<typeof useGameCardLogic>;
 
@@ -26,9 +21,7 @@ describe('GameCard', () => {
   const mockLogicReturn = {
     isFavorite: false,
     favLoading: false,
-    handleClick: jest.fn(),
     handleFavoriteToggle: jest.fn(),
-    handleAddToCollection: jest.fn(),
   };
 
   beforeEach(() => {
@@ -62,11 +55,10 @@ describe('GameCard', () => {
 
   it('calls handleClick when card is clicked', () => {
     render(<GameCard game={mockGame} platformSlug="nes" />);
-    const cardArea = screen.getByRole('button', { name: /super mario bros/i });
-    fireEvent.click(cardArea);
-    expect(mockLogicReturn.handleClick).toHaveBeenCalledTimes(1);
-  });
-
+    corenders as a link to the game detail page', () => {
+    render(<GameCard game={mockGame} platformSlug="nes" />);
+    const link = screen.getByRole('link');
+    expect(link).toHaveAttribute('href', '/games/nes/super-mario-bros'
   it('calls handleFavoriteToggle when favorite button is clicked', () => {
     render(<GameCard game={mockGame} platformSlug="nes" />);
     const favoriteButtons = screen.getAllByRole('button');

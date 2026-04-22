@@ -1,4 +1,5 @@
-import { useState, useEffect, useRef, useCallback } from "react";
+import { useState, useEffect, useRef, useCallback, useMemo } from "react";
+import Fuse from "fuse.js";
 
 export interface GameFilters {
   decade?: string;
@@ -22,31 +23,55 @@ export interface GameCardData {
 
 export function useGameListingLogic(platformSlug: string) {
   const [games, setGames] = useState<GameCardData[]>([]);
+  const [allGamesLoaded, setAllGamesLoaded] = useState(false);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [filters, setFilters] = useState<GameFilters>({});
   const [sortBy, setSortBy] = useState<
-    "name" | "rating" | "first_release_date"
-  >("name");
-  const [sortDirection, setSortDirection] = useState<"asc" | "desc">("asc");
+    "name" | "rating" | "first_release_date" | "aggregated_rating"
+  >("rating");
+  const [sortDirection, setSortDirection] = useState<"asc" | "desc">("desc");
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [page, setPage] = useState(0);
   const [hasMore, setHasMore] = useState(true);
+  const [searchQuery, setSearchQuery] = useState("");
   const observerTarget = useRef<HTMLDivElement>(null);
 
+  // Fuse.js configuration for fuzzy search
+  const fuse = useMemo(() => {
+    return new Fuse(games, {
+      keys: ["name"],
+      threshold: 0.4, // More lenient for better matching
+      ignoreLocation: true, // Search anywhere in the string
+      minMatchCharLength: 2, // Minimum chars to match
+      includeScore: true,
+      isCaseSensitive: false,
+    });
+  }, [games]);
+
+  // Filter games based on search query
+  const filteredGames = useMemo(() => {
+    if (!searchQuery.trim()) {
+      return games;
+    }
+    const results = fuse.search(searchQuery);
+    return results.map((result) => result.item);
+  }, [games, searchQuery, fuse]);
+
   const loadGames = useCallback(
-    async (reset: boolean = false) => {
+    async (reset: boolean = false, loadAll: boolean = false) => {
       setLoading(true);
       setError(null);
 
       try {
         const currentPage = reset ? 0 : page;
+        const limit = loadAll ? 500 : 20; // Load 500 games for search
         const params = new URLSearchParams({
           platform: platformSlug,
           sort: sortBy,
           sortDirection,
-          offset: String(currentPage * 20),
-          limit: "20",
+          offset: String(loadAll ? 0 : currentPage * 20),
+          limit: String(limit),
         });
 
         if (filters.decade) params.append("decade", filters.decade);
@@ -65,9 +90,13 @@ export function useGameListingLogic(platformSlug: string) {
 
         const data = await response.json();
 
-        if (reset) {
+        if (reset || loadAll) {
           setGames(data.games);
           setPage(1);
+          if (loadAll) {
+            setAllGamesLoaded(true);
+            setHasMore(false);
+          }
         } else {
           setGames((prev) => {
             // Deduplicate games by ID
@@ -80,7 +109,9 @@ export function useGameListingLogic(platformSlug: string) {
           setPage((prev) => prev + 1);
         }
 
-        setHasMore(data.games.length === 20);
+        if (!loadAll) {
+          setHasMore(data.games.length === 20);
+        }
       } catch (err) {
         setError(err instanceof Error ? err.message : "An error occurred");
       } finally {
@@ -90,13 +121,23 @@ export function useGameListingLogic(platformSlug: string) {
     [platformSlug, page, filters, sortBy, sortDirection],
   );
 
+  // Load all games when search is initiated
+  useEffect(() => {
+    if (searchQuery.trim() && !allGamesLoaded) {
+      loadGames(true, true);
+    }
+  }, [searchQuery, allGamesLoaded, loadGames]);
+
   // Initial load and filter changes
   useEffect(() => {
+    setAllGamesLoaded(false);
     loadGames(true);
   }, [platformSlug, filters, sortBy, sortDirection]);
 
-  // Infinite scroll observer
+  // Infinite scroll observer (disabled when searching)
   useEffect(() => {
+    if (searchQuery.trim()) return; // Don't use infinite scroll while searching
+
     const observer = new IntersectionObserver(
       (entries) => {
         if (entries[0].isIntersecting && hasMore && !loading) {
@@ -116,7 +157,7 @@ export function useGameListingLogic(platformSlug: string) {
         observer.unobserve(currentTarget);
       }
     };
-  }, [hasMore, loading, loadGames]);
+  }, [hasMore, loading, loadGames, searchQuery]);
 
   const handleFilterChange = (newFilters: Partial<GameFilters>) => {
     setFilters((prev) => ({ ...prev, ...newFilters }));
@@ -127,7 +168,10 @@ export function useGameListingLogic(platformSlug: string) {
       setSortDirection((prev) => (prev === "asc" ? "desc" : "asc"));
     } else {
       setSortBy(newSort);
-      setSortDirection("asc");
+      // Default to descending for ratings, ascending for name/date
+      setSortDirection(
+        newSort === "name" || newSort === "first_release_date" ? "asc" : "desc",
+      );
     }
   };
 
@@ -135,18 +179,30 @@ export function useGameListingLogic(platformSlug: string) {
     setDrawerOpen((prev) => !prev);
   };
 
+  const handleSearchChange = (query: string) => {
+    setSearchQuery(query);
+  };
+
+  const clearSearch = () => {
+    setSearchQuery("");
+  };
+
   return {
-    games,
+    games: filteredGames,
+    allGames: games,
     loading,
     error,
     filters,
     sortBy,
     sortDirection,
     drawerOpen,
-    hasMore,
+    hasMore: hasMore && !searchQuery.trim(), // Disable infinite scroll when searching
     observerTarget,
+    searchQuery,
     handleFilterChange,
     handleSortChange,
     toggleDrawer,
+    handleSearchChange,
+    clearSearch,
   };
 }

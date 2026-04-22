@@ -7,9 +7,10 @@ A modern web application for tracking and discovering classic retro games across
 - 🎮 **15 Retro Platforms** — NES, SNES, Genesis, PlayStation, Game Boy, and more
 - 🔍 **Universal Search** — Find games and platforms instantly (press `/` to focus)
 - 🎲 **Random Game Discovery** — Explore new classic titles
-- ⭐ **Personal Collection** — Mark games as beaten, favorite, and rate them
-- 📚 **Custom Collections** — Organize games into public or private collections
-- 👥 **Social Features** — Follow others, share activity, and see who's playing what
+- 📊 **Smart Sorting** — Order games by popularity, rating, release date, or alphabetically
+- 🔧 **Advanced Filters** — Filter by genre, theme, decade, and media availability
+- ⭐ **Personal Collection** — Mark games as beaten, favorite, and rate them (stored locally)
+- 📚 **Custom Collections** — Organize games into your own collections
 - 🌙 **Dark/Light Mode** — Persistent theme preference
 - 📱 **Responsive Design** — Works on desktop, tablet, and mobile
 
@@ -17,7 +18,7 @@ A modern web application for tracking and discovering classic retro games across
 
 - **Framework:** Next.js 15 (App Router)
 - **UI:** Material UI (MUI) + Tailwind CSS
-- **Auth & Database:** Supabase (PostgreSQL + Auth)
+- **Storage:** Browser Local Storage (no backend required)
 - **Game Data:** IGDB API (via Twitch)
 - **Language:** TypeScript
 
@@ -27,7 +28,6 @@ A modern web application for tracking and discovering classic retro games across
 
 - Node.js 20+
 - npm or yarn
-- Supabase account
 - Twitch Developer account (for IGDB API)
 
 ### Installation
@@ -55,23 +55,17 @@ A modern web application for tracking and discovering classic retro games across
    Required variables:
    - `TWITCH_CLIENT_ID` — Get from Twitch Developer Console
    - `TWITCH_CLIENT_SECRET` — Get from Twitch Developer Console
-   - `NEXT_PUBLIC_SUPABASE_URL` — Your Supabase project URL
-   - `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY` — Supabase anon key
-   - `SUPABASE_SERVICE_ROLE_KEY` — Supabase service role key (keep secret!)
    - `NEXT_PUBLIC_SITE_URL` — Your site URL (e.g., `http://localhost:3000`)
 
-4. Set up the database:
-   - Go to your Supabase project
-   - Open the SQL Editor
-   - Run the SQL script from `supabase/schema.sql`
-
-5. Run the development server:
+4. Run the development server:
 
    ```bash
    npm run dev
    ```
 
-6. Open [http://localhost:3000](http://localhost:3000)
+5. Open [http://localhost:3000](http://localhost:3000)
+
+All your data (favorites, ratings, collections) is stored locally in your browser.
 
 ## Project Structure
 
@@ -79,26 +73,27 @@ A modern web application for tracking and discovering classic retro games across
 vgdb/
 ├── app/                      # Next.js App Router pages
 │   ├── api/                  # API routes
+│   │   ├── games/            # Game listing API
+│   │   ├── search/           # Search API
+│   │   ├── random-game/      # Random game API
+│   │   └── test-igdb/        # IGDB test endpoint
 │   ├── games/                # Game listing and detail pages
-│   ├── user/                 # User profile pages
-│   ├── login/                # Authentication pages
-│   ├── globals.css           # Global styles
+│   ├── search/               # Search results page
+│   ├── globals.css           # Global styles & CSS variables
 │   ├── layout.tsx            # Root layout
-│   ├── page.tsx              # Home page
-│   ├── theme.ts              # MUI theme config
+│   ├── page.tsx              # Home page (platform selection)
+│   ├── theme.ts              # MUI theme configuration
 │   └── ThemeProvider.tsx     # Theme context provider
 ├── components/               # React components
-│   ├── Header/               # Global header
+│   ├── Header/               # Global header with search
 │   ├── PlatformCard/         # Platform selection cards
 │   ├── GameCard/             # Game card component
-│   ├── GameListing/          # Game list with filters
+│   ├── GameListing/          # Game list with sorting & filters
 │   └── GameDetail/           # Game detail view
 ├── lib/                      # Utilities and integrations
-│   ├── supabase/             # Supabase client setup
+│   ├── localStorage.ts       # Local storage helpers
 │   ├── igdb.ts               # IGDB API integration
-│   └── platforms.ts          # Platform definitions
-├── supabase/                 # Database schema
-│   └── schema.sql            # Database schema and migrations
+│   └── platforms.ts          # Platform definitions & configs
 └── public/                   # Static assets
 ```
 
@@ -127,24 +122,19 @@ ComponentName/
 
 - `GET /api/search?q=<query>` — Search games and platforms
 - `GET /api/random-game` — Get a random game
-- `GET /api/games?platform=<slug>` — Get games for a platform (with filters)
-- `POST /api/user/favorites` — Add game to favorites
-- `DELETE /api/user/favorites` — Remove from favorites
-- `POST /api/user/game-status` — Mark game as beaten
-- `POST /api/user/rating` — Rate a game
+- `GET /api/games?platform=<slug>&sort=<field>&sortDirection=<asc|desc>` — Get games for a platform with sorting and filters
+  - Sort options: `aggregated_rating` (popularity), `rating`, `name`, `first_release_date`
+  - Additional filters: `decade`, `genres`, `themes`, `hasVideos`, `hasScreenshots`
 
-## Database Schema
+## Local Storage Data
 
-Key tables:
+All user data is stored locally in your browser using localStorage:
 
-- `profiles` — User profiles (extends Supabase auth.users)
-- `user_games` — User-game interactions (beaten, favorite, rating)
-- `collections` — User collections
-- `collection_games` — Games in collections
-- `follows` — User follow relationships
-- `activities` — Activity feed entries
+- **User Games** — Favorites, beaten status, and personal ratings
+- **Collections** — Custom game collections
+- **Theme Preference** — Dark/light mode setting
 
-See `supabase/schema.sql` for complete schema with RLS policies.
+Your data persists across browser sessions but is device-specific.
 
 ## Supported Platforms
 

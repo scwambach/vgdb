@@ -1,5 +1,6 @@
-'use client';
+"use client";
 
+import Link from "next/link";
 import {
   Card,
   CardActionArea,
@@ -9,15 +10,11 @@ import {
   IconButton,
   Rating,
   Box,
-  CircularProgress
-} from '@mui/material';
-import {
-  Favorite,
-  FavoriteBorder,
-  Add as AddIcon,
-} from '@mui/icons-material';
-import { useGameCardLogic, GameCardData } from './Logic';
-import { getIGDBImageUrl } from '@/lib/platforms';
+  CircularProgress,
+} from "@mui/material";
+import { Favorite, FavoriteBorder, Add as AddIcon } from "@mui/icons-material";
+import { useGameCardLogic, GameCardData } from "./Logic";
+import { getIGDBImageUrl } from "@/lib/platforms";
 
 interface GameCardProps {
   game: GameCardData;
@@ -25,39 +22,43 @@ interface GameCardProps {
   onAddToCollection?: (game: GameCardData) => void;
 }
 
-export default function GameCard({ game, platformSlug, onAddToCollection }: GameCardProps) {
-  const {
-    isFavorite,
-    favLoading,
-    handleClick,
-    handleFavoriteToggle,
-  } = useGameCardLogic(game, platformSlug);
+export default function GameCard({
+  game,
+  platformSlug,
+  onAddToCollection,
+}: GameCardProps) {
+  const { isFavorite, favLoading, handleFavoriteToggle } = useGameCardLogic(
+    game,
+    platformSlug,
+  );
 
   const coverUrl = game.cover?.image_id
-    ? getIGDBImageUrl(game.cover.image_id, 'cover_big')
-    : '/placeholder-game.png';
+    ? getIGDBImageUrl(game.cover.image_id, "cover_big")
+    : "/placeholder-game.png";
+
+  const gameUrl = `/games/${platformSlug}/${game.slug}`;
 
   return (
     <Card
       sx={{
-        height: '100%',
-        display: 'flex',
-        flexDirection: 'column',
-        position: 'relative',
-        transition: 'transform 0.2s, box-shadow 0.2s',
-        '&:hover': {
-          transform: 'translateY(-4px)',
+        height: "100%",
+        display: "flex",
+        flexDirection: "column",
+        position: "relative",
+        transition: "transform 0.2s, box-shadow 0.2s",
+        "&:hover": {
+          transform: "translateY(-4px)",
           boxShadow: 6,
         },
       }}
     >
-      <CardActionArea onClick={handleClick} sx={{ flexGrow: 1 }}>
+      <CardActionArea component={Link} href={gameUrl} sx={{ flexGrow: 1 }}>
         <CardMedia
           component="img"
           height="240"
           image={coverUrl}
           alt={game.name}
-          sx={{ objectFit: 'cover' }}
+          sx={{ objectFit: "cover" }}
         />
         <CardContent>
           <Typography variant="h6" component="div" gutterBottom noWrap>
@@ -76,12 +77,12 @@ export default function GameCard({ game, platformSlug, onAddToCollection }: Game
 
       <Box
         sx={{
-          position: 'absolute',
+          position: "absolute",
           top: 8,
           right: 8,
-          display: 'flex',
+          display: "flex",
           gap: 0.5,
-          backgroundColor: 'rgba(0,0,0,0.5)',
+          backgroundColor: "rgba(0,0,0,0.5)",
           borderRadius: 1,
         }}
       >
@@ -89,7 +90,7 @@ export default function GameCard({ game, platformSlug, onAddToCollection }: Game
           size="small"
           onClick={handleFavoriteToggle}
           disabled={favLoading}
-          sx={{ color: 'white' }}
+          sx={{ color: "white" }}
         >
           {favLoading ? (
             <CircularProgress size={20} />
@@ -105,7 +106,7 @@ export default function GameCard({ game, platformSlug, onAddToCollection }: Game
             e.stopPropagation();
             onAddToCollection?.(game);
           }}
-          sx={{ color: 'white' }}
+          sx={{ color: "white" }}
         >
           <AddIcon fontSize="small" />
         </IconButton>

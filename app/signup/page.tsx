@@ -1,7 +1,7 @@
-'use client';
+"use client";
 
-import { useState } from 'react';
-import { useRouter } from 'next/navigation';
+import { useState } from "react";
+import { useRouter } from "next/navigation";
 import {
   Container,
   Paper,
@@ -11,16 +11,16 @@ import {
   Box,
   Alert,
   Link as MuiLink,
-} from '@mui/material';
-import Link from 'next/link';
-import { createClient } from '@/lib/supabase/client';
+} from "@mui/material";
+import Link from "next/link";
+import { createClient } from "@/lib/supabase/client";
 
 export default function SignupPage() {
   const router = useRouter();
   const supabase = createClient();
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [username, setUsername] = useState('');
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [username, setUsername] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -30,30 +30,24 @@ export default function SignupPage() {
     setError(null);
 
     try {
-      // Sign up user
+      // Sign up user with username in metadata (profile created automatically via DB trigger)
       const { data: authData, error: authError } = await supabase.auth.signUp({
         email,
         password,
+        options: {
+          data: {
+            username,
+          },
+        },
       });
 
       if (authError) throw authError;
-      if (!authData.user) throw new Error('User creation failed');
+      if (!authData.user) throw new Error("User creation failed");
 
-      // Create profile
-      const { error: profileError } = await supabase
-        .from('profiles')
-        .insert({
-          id: authData.user.id,
-          username,
-          display_name: username,
-        });
-
-      if (profileError) throw profileError;
-
-      router.push('/');
+      router.push("/");
       router.refresh();
     } catch (err: any) {
-      setError(err.message || 'Failed to sign up');
+      setError(err.message || "Failed to sign up");
     } finally {
       setLoading(false);
     }
@@ -107,12 +101,12 @@ export default function SignupPage() {
             size="large"
             disabled={loading}
           >
-            {loading ? 'Creating account...' : 'Sign Up'}
+            {loading ? "Creating account..." : "Sign Up"}
           </Button>
 
-          <Box sx={{ mt: 2, textAlign: 'center' }}>
+          <Box sx={{ mt: 2, textAlign: "center" }}>
             <Typography variant="body2">
-              Already have an account?{' '}
+              Already have an account?{" "}
               <Link href="/login" passHref legacyBehavior>
                 <MuiLink>Login</MuiLink>
               </Link>

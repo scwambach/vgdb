@@ -1,4 +1,10 @@
-import { useState } from 'react';
+import { useState, useEffect } from "react";
+import {
+  getUserGame,
+  toggleBeaten,
+  toggleFavorite,
+  setRating,
+} from "@/lib/localStorage";
 
 export interface GameDetailData {
   id: number;
@@ -49,24 +55,23 @@ export function useGameDetailLogic(game: GameDetailData, platformSlug: string) {
   const [actionLoading, setActionLoading] = useState(false);
   const [collectionDialogOpen, setCollectionDialogOpen] = useState(false);
 
+  // Load user game data on mount
+  useEffect(() => {
+    const userGame = getUserGame(game.id, platformSlug);
+    if (userGame) {
+      setIsBeaten(userGame.is_beaten);
+      setIsFavorite(userGame.is_favorite);
+      setPersonalRating(userGame.personal_rating);
+    }
+  }, [game.id, platformSlug]);
+
   const handleBeatenToggle = async () => {
     setActionLoading(true);
     try {
-      const response = await fetch('/api/user/game-status', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          gameId: game.id,
-          platformSlug,
-          isBeaten: !isBeaten,
-        }),
-      });
-
-      if (response.ok) {
-        setIsBeaten(!isBeaten);
-      }
+      const newValue = toggleBeaten(game.id, platformSlug);
+      setIsBeaten(newValue);
     } catch (error) {
-      console.error('Failed to update beaten status:', error);
+      console.error("Failed to update beaten status:", error);
     } finally {
       setActionLoading(false);
     }
@@ -75,20 +80,10 @@ export function useGameDetailLogic(game: GameDetailData, platformSlug: string) {
   const handleFavoriteToggle = async () => {
     setActionLoading(true);
     try {
-      const response = await fetch('/api/user/favorites', {
-        method: isFavorite ? 'DELETE' : 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          gameId: game.id,
-          platformSlug,
-        }),
-      });
-
-      if (response.ok) {
-        setIsFavorite(!isFavorite);
-      }
+      const newValue = toggleFavorite(game.id, platformSlug);
+      setIsFavorite(newValue);
     } catch (error) {
-      console.error('Failed to update favorite:', error);
+      console.error("Failed to update favorite:", error);
     } finally {
       setActionLoading(false);
     }
@@ -99,17 +94,9 @@ export function useGameDetailLogic(game: GameDetailData, platformSlug: string) {
 
     setPersonalRating(value);
     try {
-      await fetch('/api/user/rating', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          gameId: game.id,
-          platformSlug,
-          rating: value,
-        }),
-      });
+      setRating(game.id, platformSlug, value);
     } catch (error) {
-      console.error('Failed to update rating:', error);
+      console.error("Failed to update rating:", error);
     }
   };
 
@@ -122,32 +109,34 @@ export function useGameDetailLogic(game: GameDetailData, platformSlug: string) {
   };
 
   const formatReleaseDate = (timestamp?: number) => {
-    if (!timestamp) return 'Unknown';
-    return new Date(timestamp * 1000).toLocaleDateString('en-US', {
-      year: 'numeric',
-      month: 'long',
-      day: 'numeric',
+    if (!timestamp) return "Unknown";
+    return new Date(timestamp * 1000).toLocaleDateString("en-US", {
+      year: "numeric",
+      month: "long",
+      day: "numeric",
     });
   };
 
   const getPlayerCount = () => {
     const modes = game.game_modes?.map((m) => m.name.toLowerCase()) || [];
-    const hasMulti = modes.some((m) => m.includes('multi'));
-    const hasSingle = modes.some((m) => m.includes('single'));
+    const hasMulti = modes.some((m) => m.includes("multi"));
+    const hasSingle = modes.some((m) => m.includes("single"));
 
-    if (hasMulti && hasSingle) return 'Single Player / Multiplayer';
-    if (hasMulti) return 'Multiplayer';
-    if (hasSingle) return 'Single Player';
-    return 'Unknown';
+    if (hasMulti && hasSingle) return "Single Player / Multiplayer";
+    if (hasMulti) return "Multiplayer";
+    if (hasSingle) return "Single Player";
+    return "Unknown";
   };
 
-  const developers = game.involved_companies
-    ?.filter((ic) => ic.developer)
-    .map((ic) => ic.company.name) || [];
+  const developers =
+    game.involved_companies
+      ?.filter((ic) => ic.developer)
+      .map((ic) => ic.company.name) || [];
 
-  const publishers = game.involved_companies
-    ?.filter((ic) => ic.publisher)
-    .map((ic) => ic.company.name) || [];
+  const publishers =
+    game.involved_companies
+      ?.filter((ic) => ic.publisher)
+      .map((ic) => ic.company.name) || [];
 
   return {
     isBeaten,

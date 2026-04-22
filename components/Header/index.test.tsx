@@ -22,14 +22,10 @@ describe("Header", () => {
     searchQuery: "",
     searchResults: [],
     searchLoading: false,
-    anchorEl: null,
     handleSearchChange: jest.fn(),
     handleSearchSelect: jest.fn(),
     handleSearchKeyDown: jest.fn(),
     handleRandomGame: jest.fn(),
-    handleMenuOpen: jest.fn(),
-    handleMenuClose: jest.fn(),
-    handleNavigation: jest.fn(),
   };
 
   beforeEach(() => {

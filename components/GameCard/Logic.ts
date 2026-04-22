@@ -1,5 +1,5 @@
-import { useState } from 'react';
-import { useRouter } from 'next/navigation';
+import { useState, useEffect } from "react";
+import { getUserGame, toggleFavorite } from "@/lib/localStorage";
 
 export interface GameCardData {
   id: number;
@@ -12,50 +12,33 @@ export interface GameCardData {
 }
 
 export function useGameCardLogic(game: GameCardData, platformSlug: string) {
-  const router = useRouter();
   const [isFavorite, setIsFavorite] = useState(false);
   const [favLoading, setFavLoading] = useState(false);
 
-  const handleClick = () => {
-    // Store scroll position
-    sessionStorage.setItem('gameListScrollPos', String(window.scrollY));
-    router.push(`/games/${platformSlug}/${game.slug}`);
-  };
+  // Load favorite status on mount
+  useEffect(() => {
+    const userGame = getUserGame(game.id, platformSlug);
+    setIsFavorite(userGame?.is_favorite || false);
+  }, [game.id, platformSlug]);
 
   const handleFavoriteToggle = async (e: React.MouseEvent) => {
     e.stopPropagation();
+    e.preventDefault(); // Prevent link navigation
     setFavLoading(true);
 
     try {
-      const response = await fetch('/api/user/favorites', {
-        method: isFavorite ? 'DELETE' : 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          gameId: game.id,
-          platformSlug,
-        }),
-      });
-
-      if (response.ok) {
-        setIsFavorite(!isFavorite);
-      }
+      const newValue = toggleFavorite(game.id, platformSlug);
+      setIsFavorite(newValue);
     } catch (error) {
-      console.error('Favorite toggle error:', error);
+      console.error("Favorite toggle error:", error);
     } finally {
       setFavLoading(false);
     }
   };
 
-  const handleAddToCollection = async (e: React.MouseEvent) => {
-    e.stopPropagation();
-    // This will be handled by a dialog in the parent component
-  };
-
   return {
     isFavorite,
     favLoading,
-    handleClick,
     handleFavoriteToggle,
-    handleAddToCollection,
   };
 }

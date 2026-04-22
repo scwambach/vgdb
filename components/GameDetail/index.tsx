@@ -1,4 +1,4 @@
-'use client';
+"use client";
 
 import {
   Container,
@@ -18,17 +18,17 @@ import {
   AvatarGroup,
   Avatar,
   Tooltip,
-} from '@mui/material';
+} from "@mui/material";
 import {
   Favorite,
   FavoriteBorder,
   Add as AddIcon,
   ArrowBack as BackIcon,
-} from '@mui/icons-material';
-import Image from 'next/image';
-import { useRouter } from 'next/navigation';
-import { useGameDetailLogic, GameDetailData } from './Logic';
-import { getIGDBImageUrl } from '@/lib/platforms';
+} from "@mui/icons-material";
+import Image from "next/image";
+import { useRouter } from "next/navigation";
+import { useGameDetailLogic, GameDetailData } from "./Logic";
+import { getIGDBImageUrl } from "@/lib/platforms";
 
 interface GameDetailProps {
   game: GameDetailData;
@@ -36,7 +36,11 @@ interface GameDetailProps {
   platformName: string;
 }
 
-export default function GameDetail({ game, platformSlug, platformName }: GameDetailProps) {
+export default function GameDetail({
+  game,
+  platformSlug,
+  platformName,
+}: GameDetailProps) {
   const router = useRouter();
   const {
     isBeaten,
@@ -55,12 +59,12 @@ export default function GameDetail({ game, platformSlug, platformName }: GameDet
   } = useGameDetailLogic(game, platformSlug);
 
   const coverUrl = game.cover?.image_id
-    ? getIGDBImageUrl(game.cover.image_id, '1080p')
-    : '/placeholder-game.png';
+    ? getIGDBImageUrl(game.cover.image_id, "1080p")
+    : "/placeholder-game.png";
 
   const handleBack = () => {
-    const scrollPos = sessionStorage.getItem('gameListScrollPos');
-    sessionStorage.removeItem('gameListScrollPos');
+    const scrollPos = sessionStorage.getItem("gameListScrollPos");
+    sessionStorage.removeItem("gameListScrollPos");
     router.push(`/games/${platformSlug}`);
     if (scrollPos) {
       setTimeout(() => window.scrollTo(0, parseInt(scrollPos)), 100);
@@ -69,11 +73,7 @@ export default function GameDetail({ game, platformSlug, platformName }: GameDet
 
   return (
     <Container maxWidth="lg" sx={{ py: 4 }}>
-      <Button
-        startIcon={<BackIcon />}
-        onClick={handleBack}
-        sx={{ mb: 3 }}
-      >
+      <Button startIcon={<BackIcon />} onClick={handleBack} sx={{ mb: 3 }}>
         Back to {platformName} Games
       </Button>
 
@@ -86,12 +86,12 @@ export default function GameDetail({ game, platformSlug, platformName }: GameDet
               alt={game.name}
               width={600}
               height={800}
-              style={{ width: '100%', height: 'auto' }}
+              style={{ width: "100%", height: "auto", display: "block" }}
             />
           </Paper>
 
           {/* User Actions */}
-          <Box sx={{ mt: 2, display: 'flex', flexDirection: 'column', gap: 2 }}>
+          <Box sx={{ mt: 2, display: "flex", flexDirection: "column", gap: 2 }}>
             <FormControlLabel
               control={
                 <Checkbox
@@ -103,11 +103,11 @@ export default function GameDetail({ game, platformSlug, platformName }: GameDet
               label="I've beaten this"
             />
 
-            <Box sx={{ display: 'flex', gap: 1 }}>
+            <Box sx={{ display: "flex", gap: 1 }}>
               <IconButton
                 onClick={handleFavoriteToggle}
                 disabled={actionLoading}
-                color={isFavorite ? 'error' : 'default'}
+                color={isFavorite ? "error" : "default"}
               >
                 {isFavorite ? <Favorite /> : <FavoriteBorder />}
               </IconButton>
@@ -142,7 +142,15 @@ export default function GameDetail({ game, platformSlug, platformName }: GameDet
           </Typography>
 
           {/* Platform & Release Date */}
-          <Box sx={{ mb: 2, display: 'flex', gap: 1, flexWrap: 'wrap', alignItems: 'center' }}>
+          <Box
+            sx={{
+              mb: 2,
+              display: "flex",
+              gap: 1,
+              flexWrap: "wrap",
+              alignItems: "center",
+            }}
+          >
             <Chip label={platformName} color="primary" />
             <Typography variant="body1" color="text.secondary">
               Released: {formatReleaseDate(game.first_release_date)}
@@ -178,13 +186,15 @@ export default function GameDetail({ game, platformSlug, platformName }: GameDet
           <Divider sx={{ my: 3 }} />
 
           {/* Game Info */}
-          <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+          <Box sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
             {developers.length > 0 && (
               <Box>
                 <Typography variant="body2" color="text.secondary">
-                  Developer{developers.length > 1 ? 's' : ''}
+                  Developer{developers.length > 1 ? "s" : ""}
                 </Typography>
-                <Box sx={{ display: 'flex', gap: 1, flexWrap: 'wrap', mt: 0.5 }}>
+                <Box
+                  sx={{ display: "flex", gap: 1, flexWrap: "wrap", mt: 0.5 }}
+                >
                   {developers.map((dev) => (
                     <Chip key={dev} label={dev} size="small" />
                   ))}
@@ -195,9 +205,11 @@ export default function GameDetail({ game, platformSlug, platformName }: GameDet
             {publishers.length > 0 && (
               <Box>
                 <Typography variant="body2" color="text.secondary">
-                  Publisher{publishers.length > 1 ? 's' : ''}
+                  Publisher{publishers.length > 1 ? "s" : ""}
                 </Typography>
-                <Box sx={{ display: 'flex', gap: 1, flexWrap: 'wrap', mt: 0.5 }}>
+                <Box
+                  sx={{ display: "flex", gap: 1, flexWrap: "wrap", mt: 0.5 }}
+                >
                   {publishers.map((pub) => (
                     <Chip key={pub} label={pub} size="small" />
                   ))}
@@ -208,11 +220,18 @@ export default function GameDetail({ game, platformSlug, platformName }: GameDet
             {game.genres && game.genres.length > 0 && (
               <Box>
                 <Typography variant="body2" color="text.secondary">
-                  Genre{game.genres.length > 1 ? 's' : ''}
+                  Genre{game.genres.length > 1 ? "s" : ""}
                 </Typography>
-                <Box sx={{ display: 'flex', gap: 1, flexWrap: 'wrap', mt: 0.5 }}>
+                <Box
+                  sx={{ display: "flex", gap: 1, flexWrap: "wrap", mt: 0.5 }}
+                >
                   {game.genres.map((genre) => (
-                    <Chip key={genre.id} label={genre.name} size="small" variant="outlined" />
+                    <Chip
+                      key={genre.id}
+                      label={genre.name}
+                      size="small"
+                      variant="outlined"
+                    />
                   ))}
                 </Box>
               </Box>
@@ -221,11 +240,18 @@ export default function GameDetail({ game, platformSlug, platformName }: GameDet
             {game.themes && game.themes.length > 0 && (
               <Box>
                 <Typography variant="body2" color="text.secondary">
-                  Theme{game.themes.length > 1 ? 's' : ''}
+                  Theme{game.themes.length > 1 ? "s" : ""}
                 </Typography>
-                <Box sx={{ display: 'flex', gap: 1, flexWrap: 'wrap', mt: 0.5 }}>
+                <Box
+                  sx={{ display: "flex", gap: 1, flexWrap: "wrap", mt: 0.5 }}
+                >
                   {game.themes.map((theme) => (
-                    <Chip key={theme.id} label={theme.name} size="small" variant="outlined" />
+                    <Chip
+                      key={theme.id}
+                      label={theme.name}
+                      size="small"
+                      variant="outlined"
+                    />
                   ))}
                 </Box>
               </Box>
@@ -275,10 +301,10 @@ export default function GameDetail({ game, platformSlug, platformName }: GameDet
           </Typography>
           <Box
             sx={{
-              display: 'flex',
+              display: "flex",
               gap: 2,
-              overflowX: 'auto',
-              scrollSnapType: 'x mandatory',
+              overflowX: "auto",
+              scrollSnapType: "x mandatory",
               pb: 2,
             }}
           >
@@ -287,12 +313,12 @@ export default function GameDetail({ game, platformSlug, platformName }: GameDet
                 key={index}
                 sx={{
                   minWidth: 400,
-                  scrollSnapAlign: 'start',
+                  scrollSnapAlign: "start",
                 }}
               >
                 <CardMedia
                   component="img"
-                  image={getIGDBImageUrl(screenshot.image_id, 'screenshot_big')}
+                  image={getIGDBImageUrl(screenshot.image_id, "screenshot_big")}
                   alt={`${game.name} screenshot ${index + 1}`}
                   sx={{ height: 225 }}
                 />
@@ -310,10 +336,10 @@ export default function GameDetail({ game, platformSlug, platformName }: GameDet
           </Typography>
           <Box
             sx={{
-              display: 'flex',
+              display: "flex",
               gap: 2,
-              overflowX: 'auto',
-              scrollSnapType: 'x mandatory',
+              overflowX: "auto",
+              scrollSnapType: "x mandatory",
               pb: 2,
             }}
           >
@@ -322,7 +348,7 @@ export default function GameDetail({ game, platformSlug, platformName }: GameDet
                 key={video.video_id}
                 sx={{
                   minWidth: 400,
-                  scrollSnapAlign: 'start',
+                  scrollSnapAlign: "start",
                 }}
               >
                 <iframe

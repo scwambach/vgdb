@@ -63,7 +63,8 @@ export async function igdbRequest(
 export async function searchGames(query: string): Promise<IGDBSearchResult[]> {
   const body = `
     search "${query}";
-    fields name, slug, cover.image_id, platforms.id, platforms.name;
+    fields name, slug, cover.image_id, platforms.id, platforms.name, first_release_date;
+    where cover != null;
     limit 500;
   `;
 
@@ -96,9 +97,11 @@ export async function getGamesByPlatform(
     hasScreenshots,
   } = options;
 
-  let whereClause = `where platforms = (${platformId})`;
+  let whereClause = `where platforms = (${platformId}) & cover != null`;
 
   if (dateFilter) {
+    // Require release date when filtering by date
+    whereClause += ` & first_release_date != null`;
     if (dateFilter.min)
       whereClause += ` & first_release_date >= ${dateFilter.min}`;
     if (dateFilter.max)

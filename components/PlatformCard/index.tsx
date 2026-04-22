@@ -1,4 +1,4 @@
-'use client';
+"use client";
 
 import {
   Card,
@@ -6,8 +6,8 @@ import {
   CardContent,
   Typography,
   Box,
-} from '@mui/material';
-import { usePlatformCardLogic, Platform } from './Logic';
+} from "@mui/material";
+import { usePlatformCardLogic, Platform } from "./Logic";
 
 interface PlatformCardProps {
   platform: Platform;
@@ -19,26 +19,27 @@ export default function PlatformCard({ platform }: PlatformCardProps) {
   return (
     <Card
       sx={{
-        height: '100%',
-        transition: 'transform 0.2s, box-shadow 0.2s',
-        '&:hover': {
-          transform: 'translateY(-4px)',
+        height: "100%",
+        transition: "transform 0.2s, box-shadow 0.2s",
+        "&:hover": {
+          transform: "translateY(-4px)",
           boxShadow: 6,
         },
       }}
     >
-      <CardActionArea onClick={handleClick} sx={{ height: '100%' }}>
+      <CardActionArea onClick={handleClick} sx={{ height: "100%" }}>
         <Box
           sx={{
             height: 180,
             backgroundColor: platform.color,
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            color: 'white',
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            textAlign: "center",
+            color: "white",
             fontWeight: 700,
-            fontSize: '2rem',
-            textShadow: '2px 2px 4px rgba(0,0,0,0.3)',
+            fontSize: "2rem",
+            textShadow: "2px 2px 4px rgba(0,0,0,0.3)",
           }}
         >
           {platform.name}

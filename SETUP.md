@@ -4,14 +4,24 @@
 
 ### 1. Database Setup
 
-Run the SQL schema in your Supabase project:
+Run the database setup script:
 
 ```bash
-# Go to your Supabase project dashboard
-# Navigate to SQL Editor
-# Copy and paste the contents of supabase/schema.sql
-# Click "Run"
+npm run db:setup
 ```
+
+This will:
+
+- Copy the schema to your clipboard
+- Open the Supabase SQL Editor in your browser
+- Guide you through pasting and running the schema
+
+Alternatively, you can do it manually:
+
+1. Go to https://supabase.com/dashboard
+2. Navigate to SQL Editor
+3. Copy and paste the contents of supabase/schema.sql
+4. Click "Run"
 
 ### 2. Environment Variables
 
