@@ -77,13 +77,13 @@ export const PLATFORMS = {
     color: "#003791",
     dateFilter: { min: 757382400, max: 1136073600 },
   }, // 1994-2006
-  PLAYSTATION2: {
-    id: 8,
-    slug: "playstation2",
-    name: "PlayStation 2",
-    color: "#0070CC",
-    dateFilter: { min: 951868800, max: 1356998400 },
-  }, // 2000-2013
+  NINTENDO64: {
+    id: 4,
+    slug: "nintendo64",
+    name: "Nintendo 64",
+    color: "#E4000F",
+    dateFilter: { min: 835488000, max: 1020124800 },
+  }, // 1996-2002
   DREAMCAST: {
     id: 23,
     slug: "dreamcast",
