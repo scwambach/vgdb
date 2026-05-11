@@ -48,12 +48,14 @@ export default function GameDetail({
     personalRating,
     communityRating,
     actionLoading,
+    isMobile,
     developers,
     publishers,
     handleBeatenToggle,
     handleFavoriteToggle,
     handleRatingChange,
     handleOpenCollectionDialog,
+    handleVideoClick,
     formatReleaseDate,
     getPlayerCount,
   } = useGameDetailLogic(game, platformSlug);
@@ -351,16 +353,57 @@ export default function GameDetail({
                   scrollSnapAlign: "start",
                 }}
               >
-                <iframe
-                  width="400"
-                  height="225"
-                  src={`https://www.youtube.com/embed/${video.video_id}`}
-                  title={video.name}
-                  frameBorder="0"
-                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                  allowFullScreen
-                  style={{ borderRadius: 8 }}
-                />
+                {isMobile ? (
+                  <Box
+                    onClick={() => handleVideoClick(video.video_id)}
+                    sx={{
+                      width: 400,
+                      height: 225,
+                      borderRadius: 1,
+                      overflow: "hidden",
+                      cursor: "pointer",
+                      position: "relative",
+                      backgroundImage: `url(https://img.youtube.com/vi/${video.video_id}/hqdefault.jpg)`,
+                      backgroundSize: "cover",
+                      backgroundPosition: "center",
+                      "&::after": {
+                        content: '""',
+                        position: "absolute",
+                        top: "50%",
+                        left: "50%",
+                        transform: "translate(-50%, -50%)",
+                        width: 68,
+                        height: 48,
+                        background: "rgba(255, 0, 0, 0.9)",
+                        borderRadius: 1,
+                      },
+                      "&::before": {
+                        content: '""',
+                        position: "absolute",
+                        top: "50%",
+                        left: "50%",
+                        transform: "translate(-35%, -50%)",
+                        width: 0,
+                        height: 0,
+                        borderLeft: "20px solid white",
+                        borderTop: "12px solid transparent",
+                        borderBottom: "12px solid transparent",
+                        zIndex: 1,
+                      },
+                    }}
+                  />
+                ) : (
+                  <iframe
+                    width="400"
+                    height="225"
+                    src={`https://www.youtube.com/embed/${video.video_id}?enablejsapi=1&rel=0&modestbranding=1`}
+                    title={video.name}
+                    frameBorder="0"
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                    allowFullScreen
+                    style={{ borderRadius: 8 }}
+                  />
+                )}
               </Box>
             ))}
           </Box>

@@ -105,6 +105,13 @@ export const PLATFORMS = {
     color: "#00A4EF",
     dateFilter: { min: 473385600, max: 1136073600 },
   }, // 1985-2005
+  ARCADE: {
+    id: 52,
+    slug: "arcade",
+    name: "Arcade",
+    color: "#FF1493",
+    dateFilter: { min: 315532800, max: 1072915200 },
+  }, // 1980-2003
 } as const;
 
 export type PlatformSlug = (typeof PLATFORMS)[keyof typeof PLATFORMS]["slug"];

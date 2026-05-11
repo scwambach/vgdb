@@ -54,6 +54,19 @@ export function useGameDetailLogic(game: GameDetailData, platformSlug: string) {
   const [communityRating, setCommunityRating] = useState<number>(0);
   const [actionLoading, setActionLoading] = useState(false);
   const [collectionDialogOpen, setCollectionDialogOpen] = useState(false);
+  const [isMobile, setIsMobile] = useState(false);
+
+  // Detect mobile device
+  useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(
+        /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
+          navigator.userAgent,
+        ),
+      );
+    };
+    checkMobile();
+  }, []);
 
   // Load user game data on mount
   useEffect(() => {
@@ -138,6 +151,13 @@ export function useGameDetailLogic(game: GameDetailData, platformSlug: string) {
       ?.filter((ic) => ic.publisher)
       .map((ic) => ic.company.name) || [];
 
+  const handleVideoClick = (videoId: string) => {
+    if (isMobile) {
+      // Open in YouTube app on mobile
+      window.open(`https://www.youtube.com/watch?v=${videoId}`, "_blank");
+    }
+  };
+
   return {
     isBeaten,
     isFavorite,
@@ -145,6 +165,7 @@ export function useGameDetailLogic(game: GameDetailData, platformSlug: string) {
     communityRating,
     actionLoading,
     collectionDialogOpen,
+    isMobile,
     developers,
     publishers,
     handleBeatenToggle,
@@ -152,6 +173,7 @@ export function useGameDetailLogic(game: GameDetailData, platformSlug: string) {
     handleRatingChange,
     handleOpenCollectionDialog,
     handleCloseCollectionDialog,
+    handleVideoClick,
     formatReleaseDate,
     getPlayerCount,
   };
